@@ -30,6 +30,6 @@ sudo apt-get install docker-ce -y
 
 # docker machine 설치
 curl -L https://github.com/docker/machine/releases/download/v0.12.0/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine && chmod +x /tmp/docker-machine && sudo cp /tmp/docker-machine /usr/local/bin/docker-machine
-# docker registry image를 받는다
-sudo docker pull registry:2.6.1
 
+# install nvidia docker toolkit
+./install_nvidia_docker_toolkit.sh

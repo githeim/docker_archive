@@ -54,11 +54,6 @@ RUN  chmod a+x /usr/bin/repo
 # basic utils
 RUN  apt-get install -y mc htop tig
 RUN  apt-get install -y mesa-utils
-# kernel & module related pkgs
-RUN apt-get install -y module-init-tools 
-RUN apt-get install -y linux-source 
-RUN apt-get install -y mesa-utils
-
 
 # user add
 RUN useradd -ms /bin/bash $user -G sudo
