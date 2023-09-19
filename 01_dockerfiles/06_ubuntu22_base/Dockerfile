@@ -18,11 +18,11 @@ RUN apt-get update
 RUN apt-get install -y language-pack-ko
  
 # set locale ko_KR
-RUN locale-gen ko_KR.UTF-8
+RUN locale-gen en_US.UTF-8
 
-ENV LANG ko_KR.UTF-8
-ENV LANGUAGE ko_KR.UTF-8
-ENV LC_ALL ko_KR.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 # update aptget
 RUN  apt-get -y update 
@@ -46,6 +46,7 @@ RUN  apt-get install -y sudo
 RUN  apt-get install -y net-tools
 RUN  apt-get install -y libgtest-dev
 RUN  apt-get install -y libsdl2-dev 
+RUN  apt-get install -y libvulkan-dev
 # install repo
 RUN  curl https://storage.googleapis.com/git-repo-downloads/repo >  /usr/bin/repo
 RUN  chmod a+x /usr/bin/repo
