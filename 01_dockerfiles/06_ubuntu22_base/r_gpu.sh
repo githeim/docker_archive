@@ -2,7 +2,6 @@
 
 # :x: include common env variables
 source ./common.sh
-export DOCKER_IMG_NAME="ubuntu22_base:0.1"
 
 CONTAINER_NAME=ubuntu22_base_instance
 if [ $# -gt 0 ]
@@ -14,11 +13,25 @@ echo now, start
 
 
 sudo docker run -it --name $CONTAINER_NAME  \
-  --privileged --env="DISPLAY=:1"\
+  --privileged \
+  --env="DISPLAY=${DISPLAY}" \
+  --cap-add=SYS_PTRACE \
+  --security-opt=seccomp:unconfined \
+  --security-opt=apparmor:unconfined \
+  --ipc=host \
   --net=host \
-  --gpus all \
+  --gpus='all,"capabilities=compute,utility,graphics,display"' \
   --runtime nvidia \
+  --device="/dev/dri" \
+  --device /dev \
+  --device /dev/snd \
+  --group-add="dialout" \
+  --group-add="plugdev" \
   -e NVIDIA_VISIBLE_DEVICES=all \
   -e NVIDIA_DRIVER_CAPABILITIES=all \
   -v$DOCKER_SHARED_DIR:/home/ubuntu/share \
+  -v /tmp/.Xauthority:/tmp/.Xauthority \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /run/user/$(id -u):/run/user/$(id -u) \
+  --volume="/dev:/dev" \
   $DOCKER_IMG_NAME /bin/bash

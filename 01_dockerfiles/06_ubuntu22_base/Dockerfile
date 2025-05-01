@@ -34,26 +34,25 @@ RUN  apt-get install -y openssh-server
 # basic options
 RUN  apt-get install -y build-essential 
 RUN  apt-get install -y cmake 
-RUN  apt-get install -y python3 python3-dev 
+RUN  apt-get install -y python3 python3-dev python3-pip
 RUN  apt-get install -y libncurses5-dev 
 RUN  apt-get install -y unzip git zip
 RUN  apt-get install -y make
-RUN  apt-get install -y wget exuberant-ctags vim tmux curl
-RUN  apt-get install -y g++ scons lcov doxygen graphviz rpcbind gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
+RUN  apt-get install -y wget exuberant-ctags vim tmux curl libzmq3-dev
+RUN  apt-get install -y g++ lcov doxygen graphviz rpcbind gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
 RUN  apt-get install -y build-essential
 RUN  apt-get install -y default-jre 
 RUN  apt-get install -y sudo
 RUN  apt-get install -y net-tools
 RUN  apt-get install -y libgtest-dev
 RUN  apt-get install -y libsdl2-dev 
-RUN  apt-get install -y libvulkan-dev
 # install repo
 RUN  curl https://storage.googleapis.com/git-repo-downloads/repo >  /usr/bin/repo
 RUN  chmod a+x /usr/bin/repo
 RUN  ln -s /usr/bin/python3 /usr/bin/python
 
 # basic utils
-RUN  apt-get install -y mc htop 
+RUN  apt-get install -y mc htop htop tig
 RUN apt-get install -y mesa-utils
 
 # user add
@@ -74,15 +73,15 @@ USER $user
 WORKDIR /home/$user
 RUN mkdir /home/$user/share
 
-# :x: install wh_dev
-RUN mkdir -p /home/$user/00_work/00_wh_dev
-WORKDIR /home/$user/00_work/00_wh_dev
-RUN git clone https://github.com/githeim/wh_dev.git -b ubuntu_22_04
-WORKDIR /home/$user/00_work/00_wh_dev/wh_dev
-USER root
-RUN ./prerequisite_des.sh
-USER $user
-RUN ./des.py
+# # :x: install wh_dev
+# RUN mkdir -p /home/$user/00_work/00_wh_dev
+# WORKDIR /home/$user/00_work/00_wh_dev
+# RUN git clone https://github.com/githeim/wh_dev.git -b ubuntu_22_04
+# WORKDIR /home/$user/00_work/00_wh_dev/wh_dev
+# USER root
+# RUN ./prerequisite_des.sh
+# USER $user
+# RUN ./des.py
 WORKDIR /home/$user
 
 CMD /bin/bash	
