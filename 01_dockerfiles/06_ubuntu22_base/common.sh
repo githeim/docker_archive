@@ -13,4 +13,5 @@ error() {
 trap 'error ${LINENO}' ERR   
 export DOCKER_SHARED_DIR=$HOME/docker_share
 export DOCKER_IMG_NAME="ubuntu22_base:0.1"
+export CONTAINER_NAME=ubuntu22_base_instance
 

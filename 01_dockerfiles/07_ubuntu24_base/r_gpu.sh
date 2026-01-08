@@ -24,12 +24,17 @@ sudo docker run -it --name $CONTAINER_NAME  \
   --runtime nvidia \
   --device="/dev/dri" \
   --device /dev \
+  -e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \
+  -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native \
+  -v ~/.config/pulse/cookie:/home/ubuntu/.config/pulse/cookie:ro \
+  -e PULSE_COOKIE=/home/ubuntu/.config/pulse/cookie \
   --device /dev/snd \
+  --group-add $(getent group audio | cut -d: -f3) \
   --group-add="dialout" \
   --group-add="plugdev" \
   -e NVIDIA_VISIBLE_DEVICES=all \
   -e NVIDIA_DRIVER_CAPABILITIES=all \
-  -v$DOCKER_SHARED_DIR:/home/ubuntu/share \
+  -v $DOCKER_SHARED_DIR:/home/ubuntu/share \
   -v /tmp/.Xauthority:/tmp/.Xauthority \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v /run/user/$(id -u):/run/user/$(id -u) \
