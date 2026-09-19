@@ -5,9 +5,9 @@ ARG user_passwd=4321
 ARG host_account
 ARG docker_shared_dir
 
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
 
 # Update and install all packages in a single RUN to minimize layers
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -36,10 +36,29 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     mesa-utils \
     alsa-utils alsa-oss libasound2-dev libasound2-plugins \
     pulseaudio-utils pulseaudio libpulse0 \
+    ibus ibus-hangul \
+    fonts-noto-cjk \
+    dbus \
+    libxkbfile-dev \
+    libsecret-1-dev \
+    x11-apps \
+    x11-utils \
+    dbus-x11 dbus \
+    gedit \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set locale
-RUN locale-gen en_US.UTF-8
+# Add Microsoft repository for VS Code
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gpg && \
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft-archive-keyring.gpg && \
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/code stable main" | tee /etc/apt/sources.list.d/vscode.list > /dev/null && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends code && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set locale for Korean support
+RUN locale-gen en_US.UTF-8 && \
+    locale-gen ko_KR.UTF-8
 
 # Install repo
 RUN curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/bin/repo && \
@@ -61,24 +80,26 @@ RUN sh -c "echo 'KexAlgorithms +diffie-hellman-group1-sha1' >> /etc/ssh/ssh_conf
 RUN sh -c "echo 'PubkeyAcceptedAlgorithms +ssh-rsa' >> /etc/ssh/ssh_config"
 RUN sh -c "echo 'HostkeyAlgorithms +ssh-rsa' >> /etc/ssh/ssh_config"
 
+RUN mkdir -p /home/ubuntu/.config /home/ubuntu/.code && \
+    chown -R $user:$user /home/ubuntu/.config /home/ubuntu/.code
+
+# Initialize ibus registry (run as root)
+RUN mkdir -p /var/cache/ibus && \
+    chmod 755 /var/cache/ibus
+
+# Copy entrypoint script and set permissions while root
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh && \
+    chown $user:$user /usr/local/bin/entrypoint.sh
+
 USER $user
 WORKDIR /home/$user
-RUN mkdir /home/$user/share
+RUN mkdir -p /home/$user/share
 
 # Configure bash prompt with bright yellow [CONTAINER] label
 RUN echo "" >> /home/$user/.bashrc && \
     echo "# Custom container prompt" >> /home/$user/.bashrc && \
     echo "PS1=\"\\[\\033[1;33m\\][CONTAINER]\\[\\033[0m\\] \\u@\\h:\\w$ \"" >> /home/$user/.bashrc
 
-# # :x: install wh_dev
-# RUN mkdir -p /home/$user/00_work/00_wh_dev
-# WORKDIR /home/$user/00_work/00_wh_dev
-# RUN git clone https://github.com/githeim/wh_dev.git -b ubuntu_24_04
-# WORKDIR /home/$user/00_work/00_wh_dev/wh_dev
-# USER root
-# RUN ./prerequisite_des.sh
-# USER $user
-# RUN ./des.py
-WORKDIR /home/$user
-
-CMD /bin/bash	
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/bin/bash"]	

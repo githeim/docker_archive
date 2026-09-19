@@ -11,10 +11,15 @@ fi
 echo container name - [$CONTAINER_NAME]
 echo now, start
 
+#sudo docker rm $CONTAINER_NAME
 
 sudo docker run -it --name $CONTAINER_NAME  \
   --privileged \
   --env="DISPLAY=${DISPLAY}" \
+  --env="DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS}" \
+  --env="GTK_IM_MODULE=ibus" \
+  --env="XMODIFIERS=@im=ibus" \
+  --env="QT_IM_MODULE=ibus" \
   --cap-add=SYS_PTRACE \
   --security-opt=seccomp:unconfined \
   --security-opt=apparmor:unconfined \
@@ -35,7 +40,7 @@ sudo docker run -it --name $CONTAINER_NAME  \
   -e NVIDIA_VISIBLE_DEVICES=all \
   -e NVIDIA_DRIVER_CAPABILITIES=all \
   -v $DOCKER_SHARED_DIR:/home/ubuntu/share \
-  -v /tmp/.Xauthority:/tmp/.Xauthority \
+  -v ~/.Xauthority:/home/ubuntu/.Xauthority:rw \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v /run/user/$(id -u):/run/user/$(id -u) \
   --volume="/dev:/dev" \
